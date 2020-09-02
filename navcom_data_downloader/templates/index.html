@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <title>NavCom data downloader</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='sample.css') }}">
+  </head>
+
+  <body>
+    <header><a href="{{ url_for('index') }}">NavCom data downloader</a></header>
+
+    <section class="content">
+      <section id="intro">
+      <h1>Welcome</h1>
+      <p id="intro">Define your query.</p>
+      </section>
+
+      <section id="download-data-form">
+        <form id="download_form" action='submit' method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <div class="custom-file">
+              <input type="text" name="query" id="query" required>
+              <label for="query">Select query &hellip;</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </section>
+
+    </section>
+
+    <footer>IT University of Copenhagen</footer>
+  </body>
+</html>
