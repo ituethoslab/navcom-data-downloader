@@ -1,4 +1,5 @@
 import unittest
+import datetime
 from navcom_data_downloader.models import DataSource, TwitterDataSource
 
 class TestDataSource(unittest.TestCase):
@@ -31,3 +32,22 @@ class TestTwitterDataSource(unittest.TestCase):
         tds = TwitterDataSource()
         data = tds.query(query)
         self.assertEqual(10, len(data))
+
+    def test_query_results_should_be_not_older_than_start_time(self):
+        """Twitter sometimes returns tweets beyond the start-time."""
+        start_date = datetime.datetime(2020, 6, 1, tzinfo=datetime.timezone.utc)
+        query = {'string': "sheepie",
+                 'start-date': str(start_date.date())}
+        tds = TwitterDataSource()
+        data = tds.query(query)
+        self.assertTrue(all([datum.date >= start_date for datum in data]))
+
+    def test_query_results_should_be_not_newer_than_end_time(self):
+        """Twitter sometimes returns tweets beyond the end-time."""
+        end_date = datetime.datetime(2020, 6, 1, tzinfo=datetime.timezone.utc)
+        query = {'string': "owl",
+                 'end-date': str(end_date.date())}
+        tds = TwitterDataSource()
+        data = tds.query(query)
+        [print(str(datum.date), datum.permalink) for datum in data]
+        self.assertTrue(all([datum.date <= end_date for datum in data]))
