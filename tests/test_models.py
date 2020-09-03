@@ -12,7 +12,10 @@ class TestTwitterDataSource(unittest.TestCase):
         tds = TwitterDataSource()
         self.assertIsInstance(tds, TwitterDataSource)
     
-    def test_querying_twitter_model_should_log_params(self):
-        query = "giraffe"
+    def test_querying_twitter_model_should_params(self):
+        query = {'string': "giraffe",
+                 'start-date': '2020-08-15',
+                 'end-date': '2020-09-03'}
         tds = TwitterDataSource()
-        self.assertEqual(query, tds.query(query))
+        data = tds.query(query)
+        self.assertEqual(10, len(data))

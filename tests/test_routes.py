@@ -22,4 +22,4 @@ class TestRoutes(unittest.TestCase):
                                 data={'query': query},
                                 follow_redirects=True)
         self.assertEqual(200, resp.status_code)
-        self.assertIn(bytes(query, encoding='utf-8'), resp.data)
+        self.assertIn(bytes(query, encoding='utf-8'), uresp.data)

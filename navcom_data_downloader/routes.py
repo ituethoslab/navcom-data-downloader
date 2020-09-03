@@ -1,4 +1,5 @@
 from navcom_data_downloader import app
+from navcom_data_downloader.models import TwitterDataSource
 from flask import render_template, request
 
 @app.route('/hello')
@@ -14,4 +15,6 @@ def index():
 @app.route('/submit', methods=['POST'])
 def submit():
     app.logger.debug("Route %s, payload %s", "/submit", request.form)
-    return f"Queried {request.form.get('query')}"
+    ds = TwitterDataSource()
+    ds_resp = ds.query(request.form.get('query'))
+    return ds_resp
