@@ -16,5 +16,5 @@ def index():
 def submit():
     app.logger.debug("Route %s, payload %s", "/submit", request.form)
     ds = TwitterDataSource()
-    ds_resp = ds.query(request.form.get('query'))
-    return ds_resp
+    ds_resp = ds.query(request.form)
+    return "\n".join([r.text for r in ds_resp])

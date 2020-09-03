@@ -31,5 +31,3 @@ class TestTwitterDataSource(unittest.TestCase):
         tds = TwitterDataSource()
         data = tds.query(query)
         self.assertEqual(10, len(data))
-
-    
