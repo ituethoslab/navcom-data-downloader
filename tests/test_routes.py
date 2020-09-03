@@ -14,3 +14,12 @@ class TestRoutes(unittest.TestCase):
         resp = self.client.get('/hello')
         self.assertEqual(200, resp.status_code)
         self.assertEqual(b'Hello world.', resp.data)
+
+    def test_submitted_form_should_contain_query_string(self):
+        query = "kittens"
+        resp = self.client.post('/submit',
+                                # content_type='multipart/form-data',
+                                data={'query': query},
+                                follow_redirects=True)
+        self.assertEqual(200, resp.status_code)
+        self.assertIn(bytes(query, encoding='utf-8'), resp.data)

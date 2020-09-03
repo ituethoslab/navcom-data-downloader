@@ -13,5 +13,5 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    app.logger.debug("Route %s", "/submit")
-    return "Imagine data here"
+    app.logger.debug("Route %s, payload %s", "/submit", request.form)
+    return f"Queried {request.form.get('query')}"
