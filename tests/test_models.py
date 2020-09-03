@@ -18,19 +18,19 @@ class TestTwitterDataSource(unittest.TestCase):
                  'start-date': '2020-08-15',
                  'end-date': '2020-09-03'}
         tds = TwitterDataSource()
-        data = tds.query(query)
+        data = tds._query(query)
         self.assertEqual(10, len(data))
 
     def test_querying_with_no_params_should_raise_an_error(self):
         query = {}
         tds = TwitterDataSource()
         with self.assertRaises(KeyError):
-            data = tds.query(query)
+            data = tds._query(query)
 
     def test_query_with_only_string_should_be_sufficient(self):
         query = {'string': 'goats'}
         tds = TwitterDataSource()
-        data = tds.query(query)
+        data = tds._query(query)
         self.assertEqual(10, len(data))
 
     def test_query_results_should_be_not_older_than_start_time(self):
@@ -39,7 +39,7 @@ class TestTwitterDataSource(unittest.TestCase):
         query = {'string': "sheepie",
                  'start-date': str(start_date.date())}
         tds = TwitterDataSource()
-        data = tds.query(query)
+        data = tds._query(query)
         self.assertTrue(all([datum.date >= start_date for datum in data]))
 
     def test_query_results_should_be_not_newer_than_end_time(self):
@@ -48,6 +48,6 @@ class TestTwitterDataSource(unittest.TestCase):
         query = {'string': "owl",
                  'end-date': str(end_date.date())}
         tds = TwitterDataSource()
-        data = tds.query(query)
+        data = tds._query(query)
         [print(str(datum.date), datum.permalink) for datum in data]
         self.assertTrue(all([datum.date <= end_date for datum in data]))

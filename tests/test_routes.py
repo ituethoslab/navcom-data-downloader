@@ -22,4 +22,17 @@ class TestRoutes(unittest.TestCase):
                                 data={'string': query},
                                 follow_redirects=True)
         self.assertEqual(200, resp.status_code)
-        # self.assertIn(bytes(query, encoding='utf-8'), resp.data)
+
+    def test_submitted_form_should_returns_csv(self):
+        query = "lama"
+        resp = self.client.post('/submit',
+                                content_type='multipart/form-data',
+                                data={'string': query},
+                                follow_redirects=True)
+        self.assertEqual(200, resp.status_code)
+        mime_type, charset = [s.strip() for s in resp.headers['Content-Type'].split(';')]
+        self.assertEqual(mime_type, 'text/csv')
+        self.assertEqual(charset, 'charset=utf-8')
+        disposition, filename = [s.strip() for s in resp.headers['content-disposition'].split(';')]
+        self.assertEqual(disposition, 'attachment')
+        self.assertEqual(filename, "filename=" + query + ".csv")

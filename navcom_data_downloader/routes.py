@@ -1,6 +1,6 @@
 from navcom_data_downloader import app
 from navcom_data_downloader.models import TwitterDataSource
-from flask import render_template, request
+from flask import render_template, request, Response
 
 @app.route('/hello')
 def hello_world():
@@ -17,4 +17,8 @@ def submit():
     app.logger.debug("Route %s, payload %s", "/submit", request.form)
     ds = TwitterDataSource()
     ds_resp = ds.query(request.form)
-    return "\n".join([r.text for r in ds_resp])
+
+    resp = app.make_response(ds_resp)
+    resp.mimetype = "text/csv"
+    resp.headers["content-disposition"] = "attachment; filename=" + request.form['string'] + '.csv' # "data.csv"
+    return resp
