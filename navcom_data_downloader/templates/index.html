@@ -19,14 +19,19 @@
 
       <section id="download-data-form">
         <form id="download_form" action='submit' method="POST" enctype="multipart/form-data">
-          <div class="form-group">
-            <div class="custom-file">
-              <label for="string">Query string</label>
-              <input type="text" name="string" id="string" required>
-            </div>
+          <label for="string">Query string</label>
+          <input id="string" type="text" name="string" required>
+          <br>
 
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </div>
+          <label for="start-date">Start date</label>
+          <input id="start-date" type="text" name="start-date">
+          <br>
+
+          <label for="end-date">End date</label>
+          <input id="end-date" type="text" name="end-date">
+          <br>
+
+          <button type="submit">Submit</button>
         </form>
       </section>
 
