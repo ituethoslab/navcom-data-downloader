@@ -8,11 +8,10 @@ header {
     font-family: times;
     padding: 30px;
     background: repeating-linear-gradient(
-        45deg,
-        ghostwhite,
-        linen 10px,
-        snow 50px,
-        lightgrey 10px
+        5deg,
+        #1f618d,
+        white 45px,
+        red 48px
     );
 }
 
@@ -28,6 +27,10 @@ section.content {
 
 section#intro {
     padding-bottom: 10vw;
+}
+
+input {
+    margin-bottom: 3px;
 }
 
 footer {
