@@ -101,12 +101,12 @@ class TestRedditDataSource(unittest.TestCase):
     def test_serialized_single_submission_should_have_expected_header(self):
         submission = self.rds.get_submission('7jgnxm')
         df = pd.read_csv(StringIO(self.rds._as_csv([submission])))
-        self.assertEqual(list(df.columns), ['Unnamed: 0', 'title', 'body', 'author', 'created_utc', 'edited', 'score', 'is_submitter', 'parent_id', 'stickied'])
+        self.assertEqual(list(df.columns), ['Unnamed: 0', 'header', 'comments', 'author', 'created_utc', 'edited', 'score', 'is_submitter', 'parent_id', 'stickied'])
 
     def test_serialized_single_submission_should_have_expected_content(self):
         submission = self.rds.get_submission('7jgnxm')
         df = pd.read_csv(StringIO(self.rds._as_csv([submission])))
-        self.assertEqual(df.iloc[0]['title'], 'Error with PRAW')
+        self.assertEqual(df.iloc[0]['header'], 'Error with PRAW')
         self.assertEqual(df.iloc[0]['parent_id'], 't3_7jgnxm')
         self.assertEqual(df.iloc[0]['created_utc'], 1513140549.0)
         self.assertEqual(df.iloc[0]['is_submitter'], False)

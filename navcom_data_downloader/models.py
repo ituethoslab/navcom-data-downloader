@@ -117,17 +117,12 @@ class RedditDataSource(DataSource):
 
     def _as_csv(self, submissions):
         """Format posts as CSV:"""
-        # pd.DataFrame.from_records([vars(c) for s in submissions for c in s.comments])
-        # pd.DataFrame.from_records([vars(c) for s in submissions for c in s.comments])[['author', 'created_utc', 'edited', 'score', 'is_submitter', 'parent_id', 'stickied']]
-        # pd.DataFrame.from_records([{**vars(s), **vars(c)} for s in submissions for c in s.comments])[['title', 'body', 'author', 'created_utc', 'edited', 'score', 'is_submitter', 'parent_id', 'stickied']]
-        # Rather join on submission ID or something? with
-        #    submissions[2].id == submissions[2].comments[0]._submission
-        #    submissions[2].id == submissions[2].comments[0].submission.id
-        columns = ['title', 'body', 'author', 'created_utc', 'edited',
+        columns = ['header', 'comments', 'author', 'created_utc', 'edited',
                    'score', 'is_submitter', 'parent_id', 'stickied']
 
         joined = [{**vars(s), **vars(c)} for s in submissions for c in s.comments]
         df = pd.DataFrame.from_records(joined)
-        df['body'] = df['body'].apply(lambda x : x.replace('\n',' '))
+        df = df.rename(columns={'title': 'header', 'body': 'comments'})
+        df['comments'] = df['comments'].apply(lambda x : x.replace('\n',' '))
 
         return df[columns].to_csv()
