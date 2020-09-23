@@ -146,13 +146,19 @@ class RedditDataSource(DataSource):
         if kind == 'top':
             raise NotImplementedError("Needs a view.")
 
-        # Retrieve more comments.
-        # for submission in submissions:
-        #     submission.comments.replace_more()
-
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             resolved_submissions = list(submissions)
+
+        # Retrieve more comments.
+        for submission in resolved_submissions:
+            if any([isinstance(c, praw.models.MoreComments) for c in submission.comments]):
+                app.logger.debug("Retrieving more comments for %s", submission.id)
+                submission.comments.replace_more()
+
+        app.logger.debug("Used %s API calls, %s remaining.",
+                         self.reddit.auth.limits['used'],
+                         self.reddit.auth.limits['remaining'])
 
         # return list(submissions)
         return resolved_submissions
