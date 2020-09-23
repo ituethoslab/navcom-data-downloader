@@ -21,12 +21,34 @@ header a:visited {
     text-decoration: none;
 }
 
+#main-navi {
+    background-color: black;
+    padding: 2vw;
+}
+
+#main-navi a {
+    padding: 1vw;
+    font-size: large;
+    text-decoration: none;
+    color: white;
+}
+
+#main-navi a:hover {
+    background-color: red;
+}
+
 section.content {
     padding: 10%;
+    text-align: justify;
+    font-family: georgia;
 }
 
 section#intro {
     padding-bottom: 10vw;
+}
+
+section#thank-yous {
+    font-size: small;
 }
 
 input {

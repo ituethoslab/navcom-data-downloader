@@ -1,56 +1,42 @@
-<!doctype html>
-<html>
-  <head>
-    <title>NavCom data downloader</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">
-  </head>
+{% extends "base.html" %}
+{% block content %}
 
-  <body>
-    <header>
-      <a href="{{ url_for('index') }}">NavCom data downloader</a>
-      <a href="https://ethos.itu.dk">
-               <img id="ethos-logo" src="https://blogit.itu.dk/ethos/wp-content/uploads/sites/14/2018/02/TEST@2x-100-1.jpg">
-      </a>
-    </header>
+<section class="content">
+  <section id="intro">
+    <h1>Reddit</h1>
+    <p id="intro">Please define your Reddit query.</p>
+  </section>
 
-    <section class="content">
-      <section id="intro">
-        <h1>Welcome</h1>
-        <p id="intro">Please define your Reddit query.</p>
-      </section>
+  <section id="download-data-form">
+    <form id="submission-form" action="reddit-submission-submit" method="POST" enctype="multipart/form-data">
+      <p>Retrieve an individual Reddit submission, and it's comments.</p>
+      <label for="submission">Submission ID</label>
+      <input id="submission-id" type="text" name="submission_id" required>
+      <br>
 
-      <section id="download-data-form">
-        <form id="submission-form" action="reddit-submission-submit" method="POST" enctype="multipart/form-data">
-          <p>Retrieve an individual Reddit submission, and it's comments.</p>
-          <label for="submission">Submission ID</label>
-          <input id="submission-id" type="text" name="submission_id" required>
-          <br>
+      <button type="submit">Submit</button>
+    </form>
 
-          <button type="submit">Submit</button>
-        </form>
+    <hr>
 
-        <hr>
+    <form id="subreddit-form" action='reddit-subreddit-submit' method="POST" enctype="multipart/form-data">
+      <p>Retrieve comments of hot, new or top posts from a subreddit.</p>
+      <label for="subreddit">Subreddit <tt>/r/</tt></label>
+      <input id="subreddit" type="text" name="subreddit" required>
+      <br>
 
-        <form id="subreddit-form" action='reddit-subreddit-submit' method="POST" enctype="multipart/form-data">
-          <p>Retrieve comments of hot, new or top posts from a subreddit</p>
-          <label for="subreddit">Subreddit <tt>/r/</tt></label>
-          <input id="subreddit" type="text" name="subreddit" required>
-          <br>
+      <label for="kind">Choose content</label>
+      <select name="kind" id="kind" required>
+        <option value="hot">Hot</option>
+        <option value="new">New</option>
+        <option value="top" disabled>Top</option>
+      </select>
+      <br>
 
-          <label for="kind">Choose content</label>
-          <select name="kind" id="kind" required>
-            <option value="hot">Hot</option>
-            <option value="new">New</option>
-            <option value="top" disabled>Top</option>
-          </select>
-          <br>
+      <button type="submit">Submit</button>
+    </form>
+  </section>
 
-          <button type="submit">Submit</button>
-        </form>
-      </section>
+</section>
 
-    </section>
-
-    <footer>IT University of Copenhagen</footer>
-  </body>
-</html>
+{% endblock %}
