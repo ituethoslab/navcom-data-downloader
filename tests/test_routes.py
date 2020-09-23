@@ -15,9 +15,15 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(200, resp.status_code)
         self.assertEqual(b'Hello world.', resp.data)
 
+
+class TestTwitterRoutes(unittest.TestCase):
+    def setUp(self):
+        with routes.app.test_client() as client:
+            self.client = client
+
     def test_submitted_form_should_return_response(self):
         query = "kittens"
-        resp = self.client.post('/submit',
+        resp = self.client.post('/twitter-submit',
                                 content_type='multipart/form-data',
                                 data={'string': query},
                                 follow_redirects=True)
@@ -25,7 +31,7 @@ class TestRoutes(unittest.TestCase):
 
     def test_submitted_form_should_returns_csv(self):
         query = "lama"
-        resp = self.client.post('/submit',
+        resp = self.client.post('/twitter-submit',
                                 content_type='multipart/form-data',
                                 data={'string': query},
                                 follow_redirects=True)
