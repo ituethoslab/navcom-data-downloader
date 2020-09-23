@@ -170,7 +170,7 @@ class RedditDataSource(DataSource):
         df = pd.DataFrame.from_records(joined)
         app.logger.debug(f"Constructed an temp {df.shape} DataFrame")
         df = df.rename(columns={'title': 'header', 'body': 'comments'})
-        # df['comments'] = df['comments'].apply(lambda x : x.replace('\n',' '))
+        df['comments'] = df['comments'].str.replace('\n', ' ')
 
         # Project to desired columns.
         projected_df = df[columns]
