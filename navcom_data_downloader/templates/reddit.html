@@ -21,8 +21,16 @@
 
       <section id="download-data-form">
         <form id="download_form" action='reddit-submit' method="POST" enctype="multipart/form-data">
-          <label for="string">Subreddit</label>
-          <input id="string" type="text" name="string" required>
+          <label for="subreddit">Subreddit</label>
+          <input id="subreddit" type="text" name="subreddit" required>
+          <br>
+
+          <label for="kind">Choose content</label>
+          <select name="kind" id="kind" required>
+            <option value="hot">Hot</option>
+            <option value="new">New</option>
+            <option value="top" disabled>Top</option>
+          </select>
           <br>
 
           <button type="submit">Submit</button>

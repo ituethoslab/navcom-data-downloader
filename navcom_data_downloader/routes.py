@@ -8,13 +8,14 @@ def hello_world():
     return "Hello world."
 
 @app.route('/')
-def intex():
+def index():
     app.logger.debug("Route %s", "/")
+    return render_template('index.html')
 
 @app.route('/twitter')
 def twitter():
     app.logger.debug("Route %s", "/twitter")
-    return render_template('index.html')
+    return render_template('twitter.html')
 
 @app.route('/twitter-submit', methods=['POST'])
 def twitter_submit():
@@ -23,7 +24,7 @@ def twitter_submit():
     ds_resp = ds.query(request.form)
 
     resp = app.make_response(ds_resp)
-    resp.mimetype = "text/csv"
+    resp.mimetype = 'text/csv'
     resp.headers["content-disposition"] = "attachment; filename=" + request.form['string'] + '.csv' # "data.csv"
     return resp
 
@@ -36,7 +37,20 @@ def reddit():
 def reddit_submit():
     app.logger.debug("Route %s, payload %s", "/reddit-submit", request.form)
     rds = RedditDataSource()
-    raise NotImplementedError
+    data = None
+    if request.form['kind'] == 'hot':
+        data = rds.get_hot(request.form['subreddit'])
+    elif request.form['kind'] == 'new':
+        data = rds.get_new(request.form['subreddit'])
+    elif request.form['kind'] == 'top':
+        data = rds.get_top(request.form['subreddit'])
+
+    resp = app.make_response(data)
+    resp.mimetype = 'text/csv'
+    filename = request.form['subreddit'] + '-' + request.form['kind'] + '.csv'
+    resp.headers["content-disposition"] = "attachment; filename=" + filename
+
+    return resp
 
 @app.route('/reddit-hot-dataisbeautiful')
 def reddit_hot_dataisbeautiful():
