@@ -58,6 +58,25 @@ class TestTwitterDataSource(unittest.TestCase):
         self.assertTrue(all([datum.date <= end_date for datum in data]))
 
 
+class TestRedditCredentials(unittest.TestCase):
+    def setUp(self):
+        self.reddit_conf = RedditCredentials()
+
+    def test_credentials_should_incluce_all_the_necessary_keys(self):
+        self.assertIn('client_id', dir(self.reddit_conf))
+        self.assertIn('client_secret', dir(self.reddit_conf))
+        self.assertIn('password', dir(self.reddit_conf))
+        self.assertIn('user_agent', dir(self.reddit_conf))
+        self.assertIn('username', dir(self.reddit_conf))
+
+    def test_credentials_should_have_some_values(self):
+        self.assertIsInstance(self.reddit_conf.client_id, str)
+        self.assertIsInstance(self.reddit_conf.client_secret, str)
+        self.assertIsInstance(self.reddit_conf.password, str)
+        self.assertIsInstance(self.reddit_conf.user_agent, str)
+        self.assertIsInstance(self.reddit_conf.username, str)
+
+
 class TestRedditDataSource(unittest.TestCase):
     def setUp(self):
         app.logger.setLevel('INFO')
