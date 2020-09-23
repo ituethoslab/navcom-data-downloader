@@ -1,5 +1,4 @@
 from navcom_data_downloader import app
-from datetime import datetime
 from config import RedditCredentials
 import warnings
 import praw
@@ -7,6 +6,7 @@ import pandas as pd
 import GetOldTweets3 as got
 import csv
 import io
+
 
 class DataSource():
     """An \"abstract\" datasource. Inherit from this."""
@@ -27,15 +27,15 @@ class TwitterDataSource(DataSource):
         super().__init__()
         app.logger.debug(f"  ... as a Twitter DataSource instantiated")
 
-    def query(self, query, max = 10):
+    def query(self, query, max=10):
         app.logger.debug(f"Querying Twitter for '{query}'")
-        tweets = self._query(query, max = max)
+        tweets = self._query(query, max=max)
         output = self._as_csv(tweets)
         return output
 
-    def _query(self, query, max = 10):
+    def _query(self, query, max=10):
         twitter_query = got.manager.TweetCriteria()
-        # Twitter won't accept empty query string but will return 400 Bad Request.
+        # Twitter won't accept empty query but will return 400 Bad Request.
         twitter_query.setQuerySearch(query['string'])
         if 'start-date' in query:
             twitter_query.setSince(query['start-date'])
@@ -50,16 +50,17 @@ class TwitterDataSource(DataSource):
 
     def _as_csv(self, tweets):
         """Format whatever comes out from the source as CSV."""
-        cols = ['id', 'permalink', 'username', 'text', 'date', 'retweets', 'hashtags']
+        cols = ['id', 'permalink', 'username', 'text',
+                'date', 'retweets', 'hashtags']
         output = io.StringIO()
         dict_writer = csv.DictWriter(output, cols, extrasaction='ignore')
-        
+
         dict_writer.writeheader()
         for tweet in tweets:
             dict_writer.writerow(tweet.__dict__)
 
         output_str = output.getvalue()
-            
+
         return output_str
 
 
@@ -100,7 +101,7 @@ class RedditDataSource(DataSource):
 
         return submission
 
-    def get_hot(self, subreddit, limit = 10):
+    def get_hot(self, subreddit, limit=10):
         """Get a table of comments of hot submissions from a subreddit.
 
         Parameters:
@@ -111,11 +112,11 @@ class RedditDataSource(DataSource):
         str: String representation as CSV
         """
         app.logger.debug(f"Querying Reddit for hot in {subreddit}")
-        submissions = self._query(subreddit, 'hot', limit = limit)
+        submissions = self._query(subreddit, 'hot', limit=limit)
 
         return self._as_csv(submissions)
 
-    def get_new(self, subreddit, limit = 10):
+    def get_new(self, subreddit, limit=10):
         """Get a table of comments of new submissions from a subreddit.
 
         Parameters:
@@ -126,22 +127,22 @@ class RedditDataSource(DataSource):
         str: String representation as CSV
         """
         app.logger.debug("Querying Reddit for new in {subreddit}")
-        submissions = self._query(subreddit, 'new', limit = limit)
+        submissions = self._query(subreddit, 'new', limit=limit)
 
         return self._as_csv(submissions)
 
-    def get_top(self, subreddit, limit = 10):
+    def get_top(self, subreddit, limit=10):
         raise NotImplementedError
 
-    def _query(self, subreddit, kind, limit = 10):
+    def _query(self, subreddit, kind, limit=10):
         app.logger.debug(f"Querying Reddit {subreddit} for '{kind}'")
         subreddit = self.reddit.subreddit(subreddit)
 
         if kind == 'hot':
-            submissions = subreddit.hot(limit = limit)
+            submissions = subreddit.hot(limit=limit)
 
         if kind == 'new':
-            submissions = subreddit.new(limit = limit)
+            submissions = subreddit.new(limit=limit)
 
         if kind == 'top':
             raise NotImplementedError("Needs a view.")

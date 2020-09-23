@@ -3,6 +3,7 @@ from io import StringIO
 import pandas as pd
 from navcom_data_downloader import app, routes
 
+
 class TestRoutes(unittest.TestCase):
     def setUp(self):
         with routes.app.test_client() as client:
@@ -21,7 +22,8 @@ class TestRoutes(unittest.TestCase):
         resp = self.client.get('/')
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(b'<h1>Welcome</h1>' in resp.data)
-        
+
+
 class TestTwitterRoutes(unittest.TestCase):
     def setUp(self):
         with routes.app.test_client() as client:
@@ -97,7 +99,7 @@ class TestRedditRoutes(unittest.TestCase):
 
     def test_submitted_subreddit_form_missing_subreddit_should_fail(self):
         with self.assertRaises(KeyError) as cm:
-            kind='kind'
+            kind = 'kind'
             resp = self.client.post('/reddit-subreddit-submit',
                                     content_type='multipart/form-data',
                                     data={'kind': kind},
@@ -106,7 +108,7 @@ class TestRedditRoutes(unittest.TestCase):
 
     def test_submitted_subreddit_form_missing_kind_should_fail(self):
         with self.assertRaises(KeyError) as cm:
-            subreddit="dataisbeautiful"
+            subreddit = "dataisbeautiful"
             resp = self.client.post('/reddit-subreddit-submit',
                                     content_type='multipart/form-data',
                                     data={'subreddit': subreddit},
@@ -115,8 +117,8 @@ class TestRedditRoutes(unittest.TestCase):
 
     def test_submitted_subreddit_form_with_weird_kind_should_fail(self):
         with self.assertRaises(KeyError) as cm:
-            subreddit="dataisbeautiful"
-            kind='horse'
+            subreddit = "dataisbeautiful"
+            kind = 'horse'
             resp = self.client.post('/reddit-subreddit-submit',
                                     content_type='multipart/form-data',
                                     data={'subreddit': subreddit, 'kind': kind},
@@ -125,8 +127,8 @@ class TestRedditRoutes(unittest.TestCase):
 
     def test_submitted_subreddit_form_with_very_weird_kind_should_fail(self):
         with self.assertRaises(KeyError) as cm:
-            subreddit="dataisbeautiful"
-            kind=['horse', 42]
+            subreddit = "dataisbeautiful"
+            kind = ['horse', 42]
             resp = self.client.post('/reddit-subreddit-submit',
                                     content_type='multipart/form-data',
                                     data={'subreddit': subreddit, 'kind': kind},
@@ -134,8 +136,8 @@ class TestRedditRoutes(unittest.TestCase):
             self.assertEqual(resp.status_code, 400)
 
     def test_submitted_subreddit_form_with_hot_kind_should_return(self):
-        subreddit="dataisbeautiful"
-        kind='hot'
+        subreddit = "dataisbeautiful"
+        kind = 'hot'
         resp = self.client.post('/reddit-subreddit-submit',
                                 content_type='multipart/form-data',
                                 data={'subreddit': subreddit, 'kind': kind},
@@ -143,8 +145,8 @@ class TestRedditRoutes(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_submitted_subreddit_form_with_new_kind_should_return(self):
-        subreddit="dataisbeautiful"
-        kind='new'
+        subreddit = "dataisbeautiful"
+        kind = 'new'
         resp = self.client.post('/reddit-subreddit-submit',
                                 content_type='multipart/form-data',
                                 data={'subreddit': subreddit, 'kind': kind},
@@ -153,8 +155,8 @@ class TestRedditRoutes(unittest.TestCase):
 
     def test_submitted_subreddit_form_with_top_kind_should_return(self):
         with self.assertRaises(NotImplementedError) as cm:
-            subreddit="dataisbeautiful"
-            kind='top'
+            subreddit = "dataisbeautiful"
+            kind = 'top'
             resp = self.client.post('/reddit-subreddit-submit',
                                     content_type='multipart/form-data',
                                     data={'subreddit': subreddit, 'kind': kind},
@@ -186,7 +188,7 @@ class TestRedditRoutes(unittest.TestCase):
         self.assertEqual(filename, "filename=" + subreddit + '-' + kind + ".csv")
 
     def test_submitted_subreddit_form_should_return_parseable_csv(self):
-        subreddit="dataisbeautiful"
+        subreddit = "dataisbeautiful"
         kind = 'hot'
         resp = self.client.post('/reddit-subreddit-submit',
                                 content_type='multipart/form-data',

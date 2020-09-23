@@ -7,6 +7,7 @@ from config import RedditCredentials
 from navcom_data_downloader import app
 from navcom_data_downloader.models import DataSource, TwitterDataSource, RedditDataSource
 
+
 class TestDataSource(unittest.TestCase):
     def test_instantiating_generic_model_should_be_fine(self):
         ds = DataSource()
@@ -17,7 +18,7 @@ class TestTwitterDataSource(unittest.TestCase):
     def test_instantiating_should_be_fine(self):
         tds = TwitterDataSource()
         self.assertIsInstance(tds, TwitterDataSource)
-    
+
     def test_querying_with_all_params_should_return_data(self):
         query = {'string': "giraffe",
                  'start-date': '2020-08-15',
@@ -147,7 +148,7 @@ class TestRedditDataSource(unittest.TestCase):
 
     def test_getting_hot_from_a_subreddit_should_return_csv(self):
         subreddit = 'dataisbeautiful'
-        submissions = self.rds.get_hot(subreddit, limit = 3)
+        submissions = self.rds.get_hot(subreddit, limit=3)
         self.assertIsInstance(submissions, str)
         df = pd.read_csv(StringIO(submissions))
         self.assertLessEqual(len(df['header'].unique()), 3, "How many submissions are these comments from?")
@@ -155,7 +156,7 @@ class TestRedditDataSource(unittest.TestCase):
 
     def test_getting_new_from_a_subreddit_should_return_csv(self):
         subreddit = 'dataisbeautiful'
-        submissions = self.rds.get_new(subreddit, limit = 5)
+        submissions = self.rds.get_new(subreddit, limit=5)
         self.assertIsInstance(submissions, str)
         df = pd.read_csv(StringIO(submissions))
         self.assertLessEqual(len(df['header'].unique()), 5, "How many submissions are these comments from?")
