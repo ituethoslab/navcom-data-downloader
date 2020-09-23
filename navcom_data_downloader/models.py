@@ -1,8 +1,9 @@
 from navcom_data_downloader import app
 from datetime import datetime
 from config import RedditCredentials
-import pandas as pd
+import warnings
 import praw
+import pandas as pd
 import GetOldTweets3 as got
 import csv
 import io
@@ -65,7 +66,9 @@ class TwitterDataSource(DataSource):
 class RedditDataSource(DataSource):
     """Model for Reddit datasource.
 
-    Using the PRAW library."""
+    Using the PRAW library. Warnings about unclosed SSL connections
+    are ignored.
+    """
     def __init__(self):
         super().__init__()
         app.logger.debug(f"  ... as a Reddit DataSource instantiated")
@@ -77,22 +80,55 @@ class RedditDataSource(DataSource):
                                   username=creds.username)
 
     def get_submission(self, submission_id):
+        """Get a table of comments of a single submission.
+
+        Parameters:
+        submission_id (str): ID of Reddit submission to get
+
+        Returns:
+        str: String representation as CSV
+        """
+        submission = self._get_submission(submission_id)
+        return self._as_csv([submission])
+
+    def _get_submission(self, submission_id):
         """Get an individual submission and its comments."""
-        submission = self.reddit.submission(id=submission_id)
-        submission.comments.replace_more(limit=None)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            submission = self.reddit.submission(id=submission_id)
+            submission.comments.replace_more(limit=None)
+
         return submission
 
     def get_hot(self, subreddit, limit = 10):
+        """Get a table of comments of hot submissions from a subreddit.
+
+        Parameters:
+        subreddit (str): Subreddit to get from
+        limit (int): Max number of submissions to get
+
+        Returns:
+        str: String representation as CSV
+        """
         app.logger.debug(f"Querying Reddit for hot in {subreddit}")
         submissions = self._query(subreddit, 'hot', limit = limit)
 
-        return submissions
+        return self._as_csv(submissions)
 
     def get_new(self, subreddit, limit = 10):
+        """Get a table of comments of new submissions from a subreddit.
+
+        Parameters:
+        subreddit (str): Subreddit to get from
+        limit (int): Max number of submissions to get
+
+        Returns:
+        str: String representation as CSV
+        """
         app.logger.debug("Querying Reddit for new in {subreddit}")
         submissions = self._query(subreddit, 'new', limit = limit)
 
-        return submissions
+        return self._as_csv(submissions)
 
     def get_top(self, subreddit, limit = 10):
         raise NotImplementedError
@@ -100,6 +136,7 @@ class RedditDataSource(DataSource):
     def _query(self, subreddit, kind, limit = 10):
         app.logger.debug(f"Querying Reddit {subreddit} for '{kind}'")
         subreddit = self.reddit.subreddit(subreddit)
+
         if kind == 'hot':
             submissions = subreddit.hot(limit = limit)
 
@@ -113,16 +150,28 @@ class RedditDataSource(DataSource):
         # for submission in submissions:
         #     submission.comments.replace_more()
 
-        return list(submissions)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            resolved_submissions = list(submissions)
+
+        # return list(submissions)
+        return resolved_submissions
 
     def _as_csv(self, submissions):
-        """Format posts as CSV:"""
+        """Format posts as CSV.
+
+        Actually maybe this ought to be in a view, not here in the model."""
+        app.logger.debug(f"Serializing {submissions}")
         columns = ['header', 'comments', 'author', 'created_utc', 'edited',
                    'score', 'is_submitter', 'parent_id', 'stickied']
 
         joined = [{**vars(s), **vars(c)} for s in submissions for c in s.comments]
+        app.logger.debug(f"Joined a {len(joined)} dict.")
         df = pd.DataFrame.from_records(joined)
+        app.logger.debug(f"Constructed an temp {df.shape} DataFrame")
         df = df.rename(columns={'title': 'header', 'body': 'comments'})
-        df['comments'] = df['comments'].apply(lambda x : x.replace('\n',' '))
+        # df['comments'] = df['comments'].apply(lambda x : x.replace('\n',' '))
 
-        return df[columns].to_csv()
+        # Project to desired columns.
+        projected_df = df[columns]
+        return projected_df.to_csv(index=False)

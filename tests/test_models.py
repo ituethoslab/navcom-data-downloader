@@ -60,8 +60,8 @@ class TestTwitterDataSource(unittest.TestCase):
 
 class TestRedditDataSource(unittest.TestCase):
     def setUp(self):
-        self.rds = RedditDataSource()
         app.logger.setLevel('INFO')
+        self.rds = RedditDataSource()
 
     def test_instantiating_should_be_fine(self):
         self.assertIsInstance(self.rds, RedditDataSource)
@@ -70,43 +70,69 @@ class TestRedditDataSource(unittest.TestCase):
     def test_authentication_should_succeed(self):
         ...
 
+    # Test the private retrieving method.
     def test_getting_a_specific_submission_by_id_should_succeed(self):
         sid = '7jgnxm'
-        submission = self.rds.get_submission(sid)
-        self.assertEqual(sid, submission.id)
+        submission = self.rds._get_submission(sid)
+        self.assertEqual(submission.id, sid)
 
     def test_getting_hot_from_a_subreddit_should_succeed(self):
         subreddit = 'dataisbeautiful'
-        submissions = self.rds.get_hot(subreddit, limit=3)
+        submissions = self.rds._query(subreddit, 'hot')
         self.assertTrue(all([submission.subreddit.display_name == subreddit for submission in submissions]))
 
     def test_getting_hot_from_a_subreddit_with_limit_should_limit_the_number_of_results(self):
         subreddit = 'dataisbeautiful'
-        less_submissions = self.rds.get_hot(subreddit, limit=3)
-        self.assertEqual(3, len(less_submissions))
+        less_submissions = self.rds._query(subreddit, 'hot', limit=3)
+        self.assertLessEqual(len(less_submissions), 3)
+        more_submissions = self.rds._query(subreddit, 'hot', limit=30)
+        self.assertLessEqual(len(more_submissions), 30)
 
-        more_submissions = self.rds.get_hot(subreddit, limit=100)
-        self.assertEqual(100, len(more_submissions))
-
+    # Test serialization.
     def test_serializing_a_single_submission_should_work(self):
-        submission = self.rds.get_submission('7jgnxm')
+        submission = self.rds._get_submission('7jgnxm')
         self.assertIsInstance(self.rds._as_csv([submission]), str)
-        self.assertEqual(540, len(self.rds._as_csv([submission])))
+        self.assertEqual(len(self.rds._as_csv([submission])), 542)
 
-    def test_serialized_single_submission_should_parse(self):
-        submission = self.rds.get_submission('7jgnxm')
+    def test_serialized_single_submission_should_parse_with_pandas(self):
+        submission = self.rds._get_submission('7jgnxm')
         df = pd.read_csv(StringIO(self.rds._as_csv([submission])))
-        self.assertEqual(df.shape, (1, 10))
+        self.assertEqual(df.shape, (1, 9))
 
     def test_serialized_single_submission_should_have_expected_header(self):
-        submission = self.rds.get_submission('7jgnxm')
+        submission = self.rds._get_submission('7jgnxm')
         df = pd.read_csv(StringIO(self.rds._as_csv([submission])))
-        self.assertEqual(list(df.columns), ['Unnamed: 0', 'header', 'comments', 'author', 'created_utc', 'edited', 'score', 'is_submitter', 'parent_id', 'stickied'])
+        self.assertEqual(list(df.columns), ['header', 'comments', 'author', 'created_utc', 'edited', 'score', 'is_submitter', 'parent_id', 'stickied'])
 
     def test_serialized_single_submission_should_have_expected_content(self):
-        submission = self.rds.get_submission('7jgnxm')
+        submission = self.rds._get_submission('7jgnxm')
         df = pd.read_csv(StringIO(self.rds._as_csv([submission])))
         self.assertEqual(df.iloc[0]['header'], 'Error with PRAW')
         self.assertEqual(df.iloc[0]['parent_id'], 't3_7jgnxm')
         self.assertEqual(df.iloc[0]['created_utc'], 1513140549.0)
         self.assertEqual(df.iloc[0]['is_submitter'], False)
+
+    # Test public methods which return serialized CSV.
+    def test_getting_a_specific_submission_by_id_should_return_csv(self):
+        sid = '7jgnxm'
+        submission = self.rds.get_submission(sid)
+        self.assertIsInstance(submission, str)
+        self.assertEqual(542, len(submission))
+        df = pd.read_csv(StringIO(submission))
+        self.assertEqual(df.iloc[0]['header'], "Error with PRAW")
+
+    def test_getting_hot_from_a_subreddit_should_return_csv(self):
+        subreddit = 'dataisbeautiful'
+        submissions = self.rds.get_hot(subreddit, limit = 3)
+        self.assertIsInstance(submissions, str)
+        df = pd.read_csv(StringIO(submissions))
+        self.assertLessEqual(len(df['header'].unique()), 3, "How many submissions are these comments from?")
+        self.assertEqual(len(df.columns), 9)
+
+    def test_getting_new_from_a_subreddit_should_return_csv(self):
+        subreddit = 'dataisbeautiful'
+        submissions = self.rds.get_new(subreddit, limit = 5)
+        self.assertIsInstance(submissions, str)
+        df = pd.read_csv(StringIO(submissions))
+        self.assertLessEqual(len(df['header'].unique()), 5, "How many submissions are these comments from?")
+        self.assertEqual(len(df.columns), 9)
