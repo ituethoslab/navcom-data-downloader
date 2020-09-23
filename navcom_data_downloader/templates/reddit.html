@@ -20,8 +20,20 @@
       </section>
 
       <section id="download-data-form">
-        <form id="download_form" action='reddit-submit' method="POST" enctype="multipart/form-data">
-          <label for="subreddit">Subreddit</label>
+        <form id="submission-form" action="reddit-submission-submit" method="POST" enctype="multipart/form-data">
+          <p>Retrieve an individual Reddit submission, and it's comments.</p>
+          <label for="submission">Submission ID</label>
+          <input id="submission-id" type="text" name="submission_id" required>
+          <br>
+
+          <button type="submit">Submit</button>
+        </form>
+
+        <hr>
+
+        <form id="subreddit-form" action='reddit-subreddit-submit' method="POST" enctype="multipart/form-data">
+          <p>Retrieve comments of hot, new or top posts from a subreddit</p>
+          <label for="subreddit">Subreddit <tt>/r/</tt></label>
           <input id="subreddit" type="text" name="subreddit" required>
           <br>
 

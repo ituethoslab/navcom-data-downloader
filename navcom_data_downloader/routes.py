@@ -25,7 +25,8 @@ def twitter_submit():
 
     resp = app.make_response(ds_resp)
     resp.mimetype = 'text/csv'
-    resp.headers["content-disposition"] = "attachment; filename=" + request.form['string'] + '.csv' # "data.csv"
+    resp.headers["content-disposition"] = "attachment; filename=" + request.form['string'] + '.csv'
+
     return resp
 
 @app.route('/reddit')
@@ -33,9 +34,21 @@ def reddit():
     app.logger.debug("Route %s", "/reddit")
     return render_template('reddit.html')
 
-@app.route('/reddit-submit', methods=['POST'])
-def reddit_submit():
-    app.logger.debug("Route %s, payload %s", "/reddit-submit", request.form)
+@app.route('/reddit-submission-submit', methods=['POST'])
+def reddit_submission_submit():
+    app.logger.debug("Route %s, payload %s", "/reddit-submission-submit", request.form)
+    rds = RedditDataSource()
+    submission = rds.get_submission(request.form['submission_id'])
+
+    resp = app.make_response(submission)
+    resp.mimetype = 'text/csv'
+    resp.headers["content-disposition"] = "attachment; filename=" + request.form['submission_id'] + '.csv'
+
+    return resp
+
+@app.route('/reddit-subreddit-submit', methods=['POST'])
+def reddit_subreddit_submit():
+    app.logger.debug("Route %s, payload %s", "/reddit-subreddit-submit", request.form)
     rds = RedditDataSource()
     data = None
     if request.form['kind'] == 'hot':
@@ -44,6 +57,8 @@ def reddit_submit():
         data = rds.get_new(request.form['subreddit'])
     elif request.form['kind'] == 'top':
         data = rds.get_top(request.form['subreddit'])
+    else:
+        raise KeyError
 
     resp = app.make_response(data)
     resp.mimetype = 'text/csv'
@@ -51,11 +66,3 @@ def reddit_submit():
     resp.headers["content-disposition"] = "attachment; filename=" + filename
 
     return resp
-
-@app.route('/reddit-hot-dataisbeautiful')
-def reddit_hot_dataisbeautiful():
-    app.logger.debug("Route %s", "/reddit-hot-dataisbeautiful")
-    rds = RedditDataSource()
-    submissions = rds.get_hot('dataisbeautiful', limit=5)
-    return submissions
-
