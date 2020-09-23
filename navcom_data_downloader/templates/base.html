@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <title>NavCom data downloader</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">
+  </head>
+
+  <body>
+    {% block header %}
+    <header>
+      <a href="{{ url_for('index') }}">NavCom data downloader</a>
+      <a href="https://ethos.itu.dk">
+        <img id="ethos-logo" src="https://blogit.itu.dk/ethos/wp-content/uploads/sites/14/2018/02/TEST@2x-100-1.jpg">
+      </a>
+    </header>
+    {% endblock %}
+
+    {% block nav %}
+    <nav id="main-navi">
+      <a href="twitter">Twitter</a>
+      <a href="reddit">Reddit</a>
+    </nav>
+    {% endblock %}
+
+    <div id="content">{% block content %}{% endblock %}</div>
+
+    {% block footer %}
+    <footer>IT University of Copenhagen &#x1f6b2;</footer>
+    {% endblock %}
+  </body>
+</html>

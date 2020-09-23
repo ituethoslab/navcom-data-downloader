@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="content">
+  <section id="intro">
+    <h1>Welcome</h1>
+    <p>This is a little <a href="https://meson.press/books/there-is-no-software-there-are-just-services/" title="Irina Kaldrack, Martina Leeker (eds.). There is no Software, there are just Services (Meson Press. 2015)">service</a> for downloading data from Twitter and Reddit. The service is built and provided for <em>Navigating Complexity</em> (aka. NavCom) students by the <a href="https://ethos.itu.dk">ETHOS Lab</a>.</p>
+
+    <p>After selecting either Twitter or Reddit as your data source, defining your query and clicking the <em>Submit</em> button, tabular data will be downloaded in a CSV file for further processing.</p>
+
+    <p>To guide use in your course projects, and in case of technical issues, please speak with the NavCom Teaching Assistants.</p>
+    
+    <p>Please consider the software to be of experimental quality. The software is currently provided AS IS, without warranties. Currently both the Twitter and Reddit interfaces have extra limits in place for development purposes, and do not return a lot of data. The source code of this software <a href="https://github.com/ituethoslab/navcom-data-downloader">is available online</a>.</p>
+  </section>
+
+  <section id="thank-yous">
+    <p>Thank you to Open Source libraries <a href="https://github.com/Mottl/GetOldTweets3">getOldTweets3</a> and <a href="https://praw.readthedocs.org/">PRAW</a>, as well as the Python community at large.</p>
+  </section>
+</section>
+
+{% endblock %}
