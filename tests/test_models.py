@@ -112,6 +112,11 @@ class TestRedditDataSource(unittest.TestCase):
         self.assertEqual(df.iloc[0]['created_utc'], 1513140549.0)
         self.assertEqual(df.iloc[0]['is_submitter'], False)
 
+    def test_serialized_entries_should_be_free_of_newlines(self):
+        submissions = self.rds.get_hot('dataisbeautiful', limit=50)
+        df = pd.read_csv(StringIO(submissions))
+        self.assertFalse(any(df['comments'].dropna().str.match('\n')))
+
     # Test public methods which return serialized CSV.
     def test_getting_a_specific_submission_by_id_should_return_csv(self):
         sid = '7jgnxm'
