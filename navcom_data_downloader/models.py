@@ -1,5 +1,5 @@
 from navcom_data_downloader import app
-from config import RedditCredentials
+from config import RedditCredentials, RedditConfig
 import warnings
 import praw
 import pandas as pd
@@ -79,7 +79,6 @@ class RedditDataSource(DataSource):
                                   user_agent=RedditCredentials.user_agent,
                                   username=RedditCredentials.username)
 
-
     def get_submission(self, submission_id):
         """Get a table of comments of a single submission.
 
@@ -97,11 +96,11 @@ class RedditDataSource(DataSource):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             submission = self.reddit.submission(id=submission_id)
-            submission.comments.replace_more(limit=None)
+            submission.comments.replace_more(limit=RedditConfig.comment_limit)
 
         return submission
 
-    def get_hot(self, subreddit, limit=10):
+    def get_hot(self, subreddit, limit=RedditConfig.limit):
         """Get a table of comments of hot submissions from a subreddit.
 
         Parameters:
@@ -116,7 +115,7 @@ class RedditDataSource(DataSource):
 
         return self._as_csv(submissions)
 
-    def get_new(self, subreddit, limit=10):
+    def get_new(self, subreddit, limit=RedditConfig.limit):
         """Get a table of comments of new submissions from a subreddit.
 
         Parameters:
@@ -131,10 +130,11 @@ class RedditDataSource(DataSource):
 
         return self._as_csv(submissions)
 
-    def get_top(self, subreddit, limit=10):
+    def get_top(self, subreddit, limit=RedditConfig.limit):
         raise NotImplementedError
 
-    def _query(self, subreddit, kind, limit=10):
+
+    def _query(self, subreddit, kind, limit=RedditConfig.limit):
         app.logger.debug(f"Querying Reddit {subreddit} for '{kind}'")
         subreddit = self.reddit.subreddit(subreddit)
 

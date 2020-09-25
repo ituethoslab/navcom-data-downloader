@@ -3,7 +3,7 @@ import datetime
 import praw
 import pandas as pd
 from io import StringIO
-from config import RedditCredentials
+from config import RedditCredentials, RedditConfig
 from navcom_data_downloader import app
 from navcom_data_downloader.models import DataSource, TwitterDataSource, RedditDataSource
 
@@ -80,7 +80,7 @@ class TestRedditCredentials(unittest.TestCase):
 
 class TestRedditDataSource(unittest.TestCase):
     def setUp(self):
-        app.logger.setLevel('INFO')
+        # app.logger.setLevel('INFO')
         self.rds = RedditDataSource()
 
     def test_instantiating_should_be_fine(self):
@@ -101,12 +101,21 @@ class TestRedditDataSource(unittest.TestCase):
         submissions = self.rds._query(subreddit, 'hot')
         self.assertTrue(all([submission.subreddit.display_name == subreddit for submission in submissions]))
 
+    def test_getting_hot_from_a_subreddit_wo_limit_should_get_configured_number_of_results(self):
+        """This takes time."""
+        subreddit = 'dataisbeautiful'
+        submissions = self.rds._query(subreddit, 'hot')
+        self.assertEqual(len(submissions), RedditConfig.limit)
+
     def test_getting_hot_from_a_subreddit_with_limit_should_limit_the_number_of_results(self):
         subreddit = 'dataisbeautiful'
-        less_submissions = self.rds._query(subreddit, 'hot', limit=3)
-        self.assertLessEqual(len(less_submissions), 3)
-        more_submissions = self.rds._query(subreddit, 'hot', limit=30)
-        self.assertLessEqual(len(more_submissions), 30)
+        few_submissions = self.rds._query(subreddit, 'hot', limit=3)
+        self.assertLessEqual(len(few_submissions), 3)
+
+    def test_getting_hot_from_a_subreddit_with_increased_limit_should_increase_number_of_results(self):
+        subreddit = 'dataisbeautiful'
+        more_submissions = self.rds._query(subreddit, 'hot', RedditConfig.limit + 5)
+        self.assertEqual(len(more_submissions), RedditConfig.limit + 5)
 
     # Test serialization.
     def test_serializing_a_single_submission_should_work(self):
