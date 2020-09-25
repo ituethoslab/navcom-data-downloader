@@ -73,12 +73,12 @@ class RedditDataSource(DataSource):
     def __init__(self):
         super().__init__()
         app.logger.debug(f"  ... as a Reddit DataSource instantiated")
-        creds = RedditCredentials()
-        self.reddit = praw.Reddit(client_id=creds.client_id,
-                                  client_secret=creds.client_secret,
-                                  password=creds.password,
-                                  user_agent=creds.user_agent,
-                                  username=creds.username)
+        self.reddit = praw.Reddit(client_id=RedditCredentials.client_id,
+                                  client_secret=RedditCredentials.client_secret,
+                                  password=RedditCredentials.password,
+                                  user_agent=RedditCredentials.user_agent,
+                                  username=RedditCredentials.username)
+
 
     def get_submission(self, submission_id):
         """Get a table of comments of a single submission.
